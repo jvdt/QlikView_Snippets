@@ -9,62 +9,62 @@ files.
 //-----------Calendar---------------
 
 
-	 Set vCal_FD = 0; // First Day of the week {0=Mon, 1=Tue, ... , 6=Sun}
-     Set vCal_BW = 1; // Broken Weeks allowed {0=No, 1=Yes}
-     Set vCal_RD = 4; // Reference day = This day in Jan defines week one {1..7}
+Set vCal_FD = 0; // First Day of the week {0=Mon, 1=Tue, ... , 6=Sun}
+Set vCal_BW = 1; // Broken Weeks allowed {0=No, 1=Yes}
+Set vCal_RD = 4; // Reference day = This day in Jan defines week one {1..7}
 
 
 MasterCalendar:
-  	Load *,
-          Div( Factuurdatum - WeekStart( d_WeekYearRefDate, 0, 
-          										$(vCal_FD) ) + 7, 7 ) 				as d_WeekRefNumber,
-          Year( d_WeekYearRefDate ) as d_WeekRefYear;
-     Load *,
-          Date( YearStart( If( $(vCal_BW), Factuurdatum, d_WeekRefDate )) 
-          									+ $(vCal_RD) - 1) 						as d_WeekYearRefDate ;
-     Load *,
-          Date( WeekStart( Factuurdatum, 1, $(vCal_FD) ) - $(vCal_RD) ) 			as d_WeekRefDate ;
-Load 
-	num(TempDate)																	AS Factuurdatum
-,	WeekDay(TempDate) 																as d_WeekDay
-,	week(TempDate) 																	As d_Week
-,	Year(TempDate) 																	As d_Year
-,	Month(TempDate) 																As d_Month
-,	Day(TempDate) 																	As d_Day 
-,	'Q' & Ceil (month(TempDate)/3)													as d_Quarter
-,	week(TempDate)*10 + WeekDay(TempDate)  											as d_WeekWeekday
+  Load 
+  	*
+         , Div( Factuurdatum - WeekStart( d_WeekYearRefDate, 0, $(vCal_FD) ) + 7, 7 ) 		AS d_WeekRefNumber
+         , Year( d_WeekYearRefDate ) 								AS d_WeekRefYear
+	 ;
+  Load  
+  	*
+        ,  Date( YearStart( If( $(vCal_BW), Factuurdatum, d_WeekRefDate ))  + $(vCal_RD) - 1) 	AS d_WeekYearRefDate 
+	;
+  Load 
+  	*
+        ,  Date( WeekStart( Factuurdatum, 1, $(vCal_FD) ) - $(vCal_RD) ) 			AS d_WeekRefDate 
+	;
+  Load 
+	num(TempDate)										AS Factuurdatum
+,	WeekDay(TempDate) 									AS d_WeekDay
+,	week(TempDate) 										As d_Week
+,	Year(TempDate) 										As d_Year
+,	Month(TempDate) 									As d_Month
+,	Day(TempDate) 										As d_Day 
+,	'Q' & Ceil (month(TempDate)/3)								AS d_Quarter
+,	week(TempDate)*10 + WeekDay(TempDate)  							AS d_WeekWeekday
+,	Week(weekstart(TempDate)) & '-' & WeekYear(TempDate) 					AS d_WeekYear
+,	WeekYear(TempDate) & '-' & Week(weekstart(TempDate))					AS d_YearWeek
+,	Year(TempDate) &'-'& Month(TempDate)							AS d_YearMonth
+,	year(TempDate)*100+month(TempDate)							AS d_YearMonthNmbr
 
-,	Week(weekstart(TempDate)) & '-' & WeekYear(TempDate) 							as d_WeekYear
-,	WeekYear(TempDate) & '-' & Week(weekstart(TempDate))							as d_YearWeek
-,	Year(TempDate) &'-'& Month(TempDate)											as d_YearMonth
-,	year(TempDate)*100+month(TempDate)												as d_YearMonthNmbr
+,	DayNumberOfYear(TempDate)								AS d_DayNumberOfYear
+,	DayNumberOfYear(TempDate)-45								AS d_DaysBeforeValentijn
+,	DayNumberOfYear(TempDate)-67								AS d_DaysBeforeVrouwendag
+,	DayNumberOfYear(TempDate)-244								AS d_DaysBeforeEersteSchooldag
+,	DayNumberOfYear(TempDate)-305								AS d_DaysBeforeAllerheilige
+,	DayNumberOfYear(TempDate)-359								AS d_DaysBeforeKerstmis
 
-,	DayNumberOfYear(TempDate)														as d_DayNumberOfYear
-,	DayNumberOfYear(TempDate)-45													as d_DaysBeforeValentijn
-,	DayNumberOfYear(TempDate)-67													as d_DaysBeforeVrouwendag
-,	DayNumberOfYear(TempDate)-244													as d_DaysBeforeEersteSchooldag
-,	DayNumberOfYear(TempDate)-305													as d_DaysBeforeAllerheilige
-,	DayNumberOfYear(TempDate)-359													as d_DaysBeforeKerstmis
-
-,	YeartoDate(TempDate)*-1 														as d_CurYTD_Flag
-,	YeartoDate(TempDate,-1)*-1 														as d_LastYTD_Flag
-,	if(DayNumberOfYear(TempDate)<DayNumberOfYear(today()),1,0)						as d_YTD_Flag
+,	YeartoDate(TempDate)*-1 								AS d_CurYTD_Flag
+,	YeartoDate(TempDate,-1)*-1 								AS d_LastYTD_Flag
+,	if(DayNumberOfYear(TempDate)<DayNumberOfYear(today()),1,0)				AS d_YTD_Flag
 ,	If(
 		year(TempDate)*100+week(TempDate) < (year(today()+1)*100+week(today()+1))
 			,1
-			,0)																		AS d_FullWeeks_Flag
-	
-,	AutoNumber(Date(MonthStart(TempDate), 'MMM-YYYY'), 'MaandJaar')					AS d_MaandId
-,	AutoNumber(((WeekYear(TempDate) * 100)+ Week(TempDate)),'Jaarweek')				AS d_WeekId
-,	AutoNumber(Day(TempDate), 'Dag')												AS d_DagId
-,	AutoNumber('Q' & Ceil (month(TempDate)/3))										AS d_QuarterID
-
+			,0)									AS d_FullWeeks_Flag
+,	AutoNumber(Date(MonthStart(TempDate), 'MMM-YYYY'), 'MaandJaar')				AS d_MaandId
+,	AutoNumber(((WeekYear(TempDate) * 100)+ Week(TempDate)),'Jaarweek')			AS d_WeekId
+,	AutoNumber(Day(TempDate), 'Dag')							AS d_DagId
+,	AutoNumber('Q' & Ceil (month(TempDate)/3))						AS d_QuarterID
 ;
 
-
 LOAD 
-	date(mindate + IterNo()) 					AS TempDate
- 	,maxdate 									// Used in InYearToDate() above, but not kept 
+	date(mindate + IterNo()) 								AS TempDate
+ 	,maxdate 						// Used in InYearToDate() above, but not kept 
 WHILE mindate + IterNo() <= YearEnd(maxdate+1600);
 
 LOAD
@@ -72,27 +72,25 @@ LOAD
  	max(FieldValue('Factuurdatum', recno())) 	as maxdate
 AUTOGENERATE FieldValueCount('Factuurdatum');
 
-
-
-left join(MasterCalendar)
+LEFT JOIN(MasterCalendar)
 LOAD 
-	 Datum					as Factuurdatum, 
-     Pasen1					as d_Pasen1, 
-     Pasen2					as d_Pasen2, 
-     Hemelvaart				as d_Hemelvaart, 
-     Pinksteren1			as d_Pinksteren1, 
-     Pinksteren2			as d_Pinksteren2, 
-     Koningsdag				as d_Koningsdag, 
- //    Kerst1				as d_Kerst1, 
- //    Kerst2				as d_Kerst2, 
-     Nieuwjaarsdag 			as d_Nieuwjaarsdag, 
-     Vrijedag				as d_Vrijedag, 
-     Dagtype 				as d_Dagtype,
- 	 Moederdag_Eurpopa		as d_Moederdag_Eurpopa,
-	 Moededag_Frankrijk		as d_Moededag_Frankrijk,
-	 Moederdag_Spanje		as d_Moederdag_Spanje,
-	 Moederdag_VK			as d_Moederdag_VK,
-	 Moederdag_Polen		as d_Moederdag_Polen
+	Datum					as Factuurdatum
+,     	Pasen1					as d_Pasen1
+,     	Pasen2					as d_Pasen2
+,     	Hemelvaart				as d_Hemelvaart
+,     	Pinksteren1				as d_Pinksteren1
+,     	Pinksteren2				as d_Pinksteren2
+,     	Koningsdag				as d_Koningsdag
+ //,   	Kerst1					as d_Kerst1
+ //,   	Kerst2					as d_Kerst2
+,     	Nieuwjaarsdag 				as d_Nieuwjaarsdag
+,     	Vrijedag				as d_Vrijedag
+,    	Dagtype 				as d_Dagtype
+, 	Moederdag_Eurpopa			as d_Moederdag_Eurpopa
+,	Moededag_Frankrijk			as d_Moededag_Frankrijk
+,	Moederdag_Spanje			as d_Moederdag_Spanje
+,	Moederdag_VK				as d_Moederdag_VK
+,	Moederdag_Polen				as d_Moederdag_Polen
 FROM
 $(dirfactfc)CalenderHoliday.xlsx
 (ooxml, embedded labels, table is KalenderFC);
@@ -121,29 +119,28 @@ LOAD
 ,	if(RowNo()=1,-1,if(	d_Moederdag_Eurpopa=1,0,peek(d_Moederdag_Eurpopa_Full)-1))	as d_Moederdag_Eurpopa_Full	
 Resident MasterCalendarSortedDesc;
 
-drop table MasterCalendarSortedDesc;
-
+Drop Table MasterCalendarSortedDesc;
 
 
 MasterCalendarASC:
 NoConcatenate
 LOAD
 	*	
-resident MasterCalendarFull
-where year(Factuurdatum)<year(today())+1
-order by Factuurdatum asc;
+RESIDENT MasterCalendarFull
+	WHERE year(Factuurdatum)<year(today())+1
+	ORDER BY Factuurdatum asc;
 
-drop table MasterCalendarFull;
+DROP TABLE MasterCalendarFull;
 
 MasterCalendar:
 NoConcatenate
 LOAD
 	*
-,	if(RowNo()=1,1,if(	d_Pasen1=1,0,peek(d_Pasen1_Full_From)+1))						as d_Pasen1_Full_From
-,	if(RowNo()=1,1,if(	d_Hemelvaart=1,0,peek(d_Hemelvaart_Full_From)+1))				as d_Hemelvaart_Full_From
-,	if(RowNo()=1,1,if(	d_Pinksteren1=1,0,peek(d_Pinksteren1_Full_From)+1))				as d_Pinksteren1_Full_From
-,	if(RowNo()=1,1,if(	d_Koningsdag=1,0,peek(d_Koningsdag_Full_From)+1))				as d_Koningsdag_Full_From
-,	if(RowNo()=1,1,if(	d_Nieuwjaarsdag=1,0,peek(d_Nieuwjaarsdag_Full_From)+1))			as d_Nieuwjaarsdag_Full_From
+,	if(RowNo()=1,1,if(	d_Pasen1=1,0,peek(d_Pasen1_Full_From)+1))			as d_Pasen1_Full_From
+,	if(RowNo()=1,1,if(	d_Hemelvaart=1,0,peek(d_Hemelvaart_Full_From)+1))		as d_Hemelvaart_Full_From
+,	if(RowNo()=1,1,if(	d_Pinksteren1=1,0,peek(d_Pinksteren1_Full_From)+1))		AS d_Pinksteren1_Full_From
+,	if(RowNo()=1,1,if(	d_Koningsdag=1,0,peek(d_Koningsdag_Full_From)+1))		as d_Koningsdag_Full_From
+,	if(RowNo()=1,1,if(	d_Nieuwjaarsdag=1,0,peek(d_Nieuwjaarsdag_Full_From)+1))		as d_Nieuwjaarsdag_Full_From
 ,	if(RowNo()=1,1,if(	d_Moederdag_Eurpopa=1,0,peek(d_Moederdag_Eurpopa_Full_From)+1))	as d_Moederdag_Eurpopa_Full_From
 Resident MasterCalendarASC;
 
